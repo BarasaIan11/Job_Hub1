@@ -97,12 +97,11 @@ A full-stack job portal website built with MongoDB, Express, React, and Node.js 
    ```bash
    cd client
    npm run dev
-   npm start
    ```
-   The React app will run on `http://localhost:3000`.
+   The React app will run on `http://localhost:5173`.
 
 3. **Access the Application**:
-   Open `http://localhost:3000` in your browser to use the job portal.
+   Open `http://localhost:5173` in your browser to use the job portal.
 
 ## Deployment
 1. **Deploy Backend**:
