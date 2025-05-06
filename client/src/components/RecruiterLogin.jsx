@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 
 const RecruiterLogin = () => {
 
-  const navigate = useNavigate
+  const navigate = useNavigate()
 
   const [state, setState] = useState('Login')
   const [name, setName] = useState('')
@@ -23,7 +23,7 @@ const RecruiterLogin = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault()
     if (state == "Sign Up" && !isTextDataSubmitted) {
-      setIsTextDataSubmitted(true)
+      return setIsTextDataSubmitted(true)
     }
 
     try {
@@ -44,9 +44,30 @@ const RecruiterLogin = () => {
         }
 
 
+      } else {
+
+        const formData = new FormData()
+        formData.append('name',name)
+        formData.append('password',password)
+        formData.append('email',email)
+        formData.append('image',image)
+
+        const {data} = await axios.post(backendUrl+'/api/company/register', formData)
+
+        if (data.success) {
+          console.log(data);
+          setCompanyData(data.company)
+          setCompanyToken(data.token)
+          localStorage.setItem('companyToken',data.token)
+          setShowRecruiterLogin(false)
+          navigate('/dashboard')
+        } else{
+          toast.error(data.message)
+        }
+
       }
     } catch (error) {
-      
+      toast.error(error.message)
     }
   }
 

@@ -15,7 +15,7 @@ import {clerkMiddleware} from '@clerk/express'
 const app = express()
 
 // connect to database
-await connectDB()
+connectDB()
 await connectCloudinary()
 
 // middlewares

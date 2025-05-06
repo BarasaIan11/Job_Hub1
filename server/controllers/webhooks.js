@@ -33,18 +33,18 @@ export const clerkWebhooks = async (req, res) => {
                 break;
             }
 
-            case 'user.created': {
+            case 'user.updated': {
                 const userData = {
                     email: data.email_addresses[0].email_address,
                     name: data.first_name + "" + data.last_name,
                     image: data.image_url,
                 }
                 await User.findByIdAndUpdate(data.id, userData)
-                req.json({})
+                res.json({})
                 break;
             }
 
-            case 'user.created': {
+            case 'user.deleted': {
                 await User.findByIdAndDelete(data.id)
                 res.json({})
                 break;
@@ -55,6 +55,6 @@ export const clerkWebhooks = async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
-        req.json({success:false,message:'Webhooks Error'})
+        res.json({success:false,message:'Webhooks Error'})
     }
 }
