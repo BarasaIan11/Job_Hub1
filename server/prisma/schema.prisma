@@ -10,7 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Job model translated 
+// User model 
+model User {
+  id              String           @id // Using the String ID from Clerk
+  name            String
+  email           String           @unique
+  password        String
+  resume          String?          
+  image           String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  jobApplications JobApplication[]
+}
+
+
+// Job model 
 model Job {
   id          Int      @id @default(autoincrement())
   title       String
@@ -24,21 +39,41 @@ model Job {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relation to the Company model
+  
   companyId Int
   company   Company @relation(fields: [companyId], references: [id])
+jobApplications JobApplication[]
 }
 
-// Placeholder for your Company model
+// Company model
 model Company {
   id        Int      @id @default(autoincrement())
   name      String
-  email     String   @unique // This ensures no two companies can have the same email
+  email     String   @unique 
   image     String
-  password  String   // Note: Password will be stored in plain text. We'll handle hashing in the application code.
+  password  String   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // This establishes the other side of the relationship: a Company can have many Jobs
   jobs  Job[]
+  jobApplications JobApplication[]
+}
+
+// JobApplication model 
+model JobApplication {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("Pending")
+  date      BigInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // --- Relations ---
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id])
+
+  jobId     Int
+  job       Job      @relation(fields: [jobId], references: [id])
 }
