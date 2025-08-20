@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@clerk/express": "^1.4.9",
+    "@prisma/client": "^6.14.0",
     "@sentry/node": "^9.14.0",
     "@sentry/profiling-node": "^9.14.0",
     "bcrypt": "^5.1.1",
@@ -21,10 +22,12 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.13.2",
     "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.9",
     "server": "file:",
     "svix": "^1.64.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.14.0"
   }
 }

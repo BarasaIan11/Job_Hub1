@@ -1,0 +1,40 @@
+// This is my Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Job model translated from your Mongoose schema
+model Job {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  location    String
+  category    String
+  level       String
+  salary      Int
+  date        BigInt // Using BigInt to store the numeric timestamp. DateTime is another option if you prefer.
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to the Company model
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id])
+}
+
+// Placeholder for your Company model
+model Company {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  // ... other fields will go here
+
+  // This establishes the other side of the relationship: a Company can have many Jobs
+  jobs  Job[]
+}

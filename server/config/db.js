@@ -1,11 +1,6 @@
-import mongoose from "mongoose";
+import { PrismaClient } from "@prisma/client";
 
-// function to connect to the MongoDB database
-const connectDB = async () => {
-     
-    mongoose.connection.on('connected', ()=> console.log('Database Connected'))
+// Create a single, shared instance of the Prisma Client
+const prisma = new PrismaClient();
 
-    await mongoose.connect(`${process.env.MONGODB_URI}/job-portal`)
-}
-
-export default connectDB
+export default prisma;
