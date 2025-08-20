@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Job model translated from your Mongoose schema
+// Job model translated 
 model Job {
   id          Int      @id @default(autoincrement())
   title       String
@@ -31,9 +31,13 @@ model Job {
 
 // Placeholder for your Company model
 model Company {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  // ... other fields will go here
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique // This ensures no two companies can have the same email
+  image     String
+  password  String   // Note: Password will be stored in plain text. We'll handle hashing in the application code.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // This establishes the other side of the relationship: a Company can have many Jobs
   jobs  Job[]
