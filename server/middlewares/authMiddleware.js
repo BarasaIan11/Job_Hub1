@@ -1,23 +1,55 @@
-import jwt from 'jsonwebtoken'
-import Company from '../models/Company.js'
+import jwt from "jsonwebtoken";
+import prisma from "../config/db.js";
 
-export const protectCompany = async (req,res,next) => {
+export const protectCompany = async (req, res, next) => {
+  let token;
 
-    const token = req.headers.token
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.headers.token) {
+    token = req.headers.token;
+  }
 
-    if (!token) {
-        return res.json({success:false, message:'Not authorized, Login Again'})
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Not authorized, no token provided." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const company = await prisma.company.findUnique({
+      where: {
+        id: decoded.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!company) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized, company not found.",
+      });
     }
 
-    try {
-        const decoded = jwt.verify(token,process.env.JWT_SECRET)
+    req.company = company;
 
-        req.company = await Company.findById(decoded.id).select('-password')
-
-        next()
-
-    } catch (error) {
-        res.json({success:false, message: error.message})
-    }
-    
-}
+    next();
+  } catch (error) {
+    console.error("Auth middleware error:", error.message);
+    res
+      .status(401)
+      .json({ success: false, message: "Not authorized, token failed." });
+  }
+};
