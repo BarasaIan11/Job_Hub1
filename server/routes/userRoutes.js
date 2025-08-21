@@ -15,9 +15,6 @@ router.get("/user", getUserData);
 // apply for a job
 router.post("/apply", applyForJob);
 
-// creating a new user
-router.post("/create-user", createUser);
-
 // get all job applications for a user
 router.get("/applications", getUserJobApplications);
 
