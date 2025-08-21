@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-// import { manageJobsData } from '../assets/assets'
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
+import { useCallback } from "react";
 
 const ManageJobs = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const ManageJobs = () => {
   const { backendUrl, companyToken } = useContext(AppContext);
 
   // function to fetch compony job applications data
-  const fetchCompanyJobs = async () => {
+  const fetchCompanyJobs = useCallback(async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/company/list-jobs", {
         headers: { token: companyToken },
@@ -31,19 +31,19 @@ const ManageJobs = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
+  }, [backendUrl, companyToken]);
 
   // function to change job visisbility
   const changeJobVisibility = async (id) => {
     try {
-      const { data } = await axios.get(
+      const { data } = await axios.post(
         backendUrl + "/api/company/change-visibility",
         { id },
         { headers: { token: companyToken } }
       );
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Visibility updated!");
         fetchCompanyJobs();
       } else {
         toast.error(data.message);
@@ -57,7 +57,7 @@ const ManageJobs = () => {
     if (companyToken) {
       fetchCompanyJobs();
     }
-  }, [companyToken]);
+  }, [companyToken, fetchCompanyJobs]);
 
   return jobs ? (
     jobs.length === 0 ? (
@@ -93,7 +93,8 @@ const ManageJobs = () => {
                   </td>
                   <td className="py-2 px-4 border-b">{job.title}</td>
                   <td className="py-2 px-4 border-b max-sm:hidden">
-                    {moment(job.date).format("ll")}
+                    {moment(job.date).format("ll")}{" "}
+                    {/* Ensure date is a number */}
                   </td>
                   <td className="py-2 px-4 border-b max-sm:hidden">
                     {job.location}
@@ -103,7 +104,7 @@ const ManageJobs = () => {
                   </td>
                   <td className="py-2 px-4 border-b">
                     <input
-                      onChange={() => changeJobVisibility(job._id)}
+                      onChange={() => changeJobVisibility(job.id)}
                       className="scale-125 ml-4"
                       type="checkbox"
                       checked={job.visible}
