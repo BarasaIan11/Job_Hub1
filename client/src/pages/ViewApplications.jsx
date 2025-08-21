@@ -4,6 +4,7 @@ import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Loading from "../components/Loading";
+import { useCallback } from "react";
 
 const ViewApplications = () => {
   const { backendUrl, companyToken } = useContext(AppContext);
@@ -11,7 +12,7 @@ const ViewApplications = () => {
   const [applicants, setApplicants] = useState(false);
 
   // function to fetch company job applications data
-  const fetchCompanyJobApplications = async () => {
+  const fetchCompanyJobApplications = useCallback(async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/company/applicants", {
         headers: { token: companyToken },
@@ -25,15 +26,16 @@ const ViewApplications = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
+  }, [backendUrl, companyToken]);
 
   // function to update job application status
   const changeJobApplicationStatus = async (id, status) => {
     try {
+      const headers = { Authorization: `Bearer ${companyToken}` };
       const { data } = await axios.post(
         backendUrl + "/api/company/change-status",
         { id, status },
-        { headers: { token: companyToken } }
+        { headers }
       );
 
       if (data.success) {
@@ -50,7 +52,7 @@ const ViewApplications = () => {
     if (companyToken) {
       fetchCompanyJobApplications();
     }
-  }, [companyToken]);
+  }, [companyToken, fetchCompanyJobApplications]);
 
   return applicants ? (
     applicants.length === 0 ? (
@@ -112,7 +114,7 @@ const ViewApplications = () => {
                             <button
                               onClick={() =>
                                 changeJobApplicationStatus(
-                                  applicant._id,
+                                  applicant.id,
                                   "Accepted"
                                 )
                               }
@@ -123,7 +125,7 @@ const ViewApplications = () => {
                             <button
                               onClick={() =>
                                 changeJobApplicationStatus(
-                                  applicant._id,
+                                  applicant.id,
                                   "Rejected"
                                 )
                               }
