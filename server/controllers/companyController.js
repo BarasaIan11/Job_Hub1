@@ -1,4 +1,4 @@
-import prisma from "../config/db.js"; // Import Prisma Client
+import prisma from "../config/db.js";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import generateToken from "../utils/generateToken.js";
