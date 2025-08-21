@@ -11,6 +11,7 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "@clerk/clerk-react";
+import { useCallback } from "react";
 
 const ApplyJob = () => {
   const { id } = useParams();
@@ -30,7 +31,7 @@ const ApplyJob = () => {
     fetchUserApplications,
   } = useContext(AppContext);
 
-  const fetchJob = async () => {
+  const fetchJob = useCallback(async () => {
     try {
       const { data } = await axios.get(backendUrl + `/api/jobs/${id}`);
 
@@ -43,7 +44,7 @@ const ApplyJob = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
+  }, [backendUrl, id]);
 
   const applyHandler = async () => {
     try {
@@ -60,7 +61,7 @@ const ApplyJob = () => {
 
       const { data } = await axios.post(
         backendUrl + "/api/users/apply",
-        { jobId: JobData._id },
+        { jobId: JobData.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -75,22 +76,22 @@ const ApplyJob = () => {
     }
   };
 
-  const checkAlreadyApplied = () => {
+  const checkAlreadyApplied = useCallback(() => {
     const hasApplied = userApplications.some(
-      (item) => item.jobId._id === JobData._id
+      (item) => item.jobId.id === JobData.id
     );
     setIsAlreadyApplied(hasApplied);
-  };
+  }, [JobData, userApplications]);
 
   useEffect(() => {
     fetchJob();
-  }, [id]);
+  }, [fetchJob]);
 
   useEffect(() => {
     if (userApplications.length > 0 && JobData) {
       checkAlreadyApplied();
     }
-  }, [JobData, userApplications, id]);
+  }, [JobData, userApplications, checkAlreadyApplied]);
 
   return JobData ? (
     <>
@@ -164,16 +165,16 @@ const ApplyJob = () => {
               {jobs
                 .filter(
                   (job) =>
-                    job._id !== JobData._id &&
-                    job.companyId._id === JobData.companyId._id
+                    job.id !== JobData.id &&
+                    job.companyId.id === JobData.companyId.id
                 )
                 .filter((job) => {
                   // set of applied jobids
                   const appliedJobIds = new Set(
-                    userApplications.map((app) => app.jobId && app.jobId._id)
+                    userApplications.map((app) => app.jobId && app.jobId.id)
                   );
                   // return true if user has not already applied for this job
-                  return !appliedJobIds.has(job._id);
+                  return !appliedJobIds.has(job.id);
                 })
                 .slice(0, 4)
                 .map((job, index) => (
